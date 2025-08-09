@@ -4,6 +4,24 @@
 
 本指南将帮助你将ExcelSync应用部署到AWS ECS（Elastic Container Service），实现自动化CI/CD流程。
 
+## 🏗️ 架构设计
+
+我们采用云原生架构，**不使用nginx反向代理**，而是直接使用AWS Application Load Balancer：
+
+```
+Internet → ALB (路径路由) → {
+  /api/* → Backend ECS Service (Port 8000)
+  /*     → Frontend ECS Service (Port 3000)
+}
+```
+
+**为什么不用nginx？**
+- ✅ AWS ALB已提供负载均衡和路径路由
+- ✅ 减少一层不必要的网络跳跃
+- ✅ 降低运维复杂性和成本
+- ✅ 更好的AWS生态集成（WAF、Certificate Manager等）
+- ✅ 原生支持健康检查和自动故障转移
+
 ## 📋 前置要求
 
 ### AWS 资源准备
@@ -122,33 +140,73 @@ aws ecs register-task-definition \
     --cli-input-json file://ecs-task-definitions/backend-task-definition.json
 ```
 
-### 第四步：创建ECS服务
+### 第四步：创建Application Load Balancer
 
-#### 1. 创建服务（通过AWS Console更容易）
+#### 1. 创建ALB和目标组
+```bash
+# 创建前端目标组
+aws elbv2 create-target-group \
+    --name excelsync-frontend-tg \
+    --protocol HTTP \
+    --port 3000 \
+    --vpc-id vpc-xxxxxxxx \
+    --health-check-path / \
+    --health-check-interval-seconds 30
 
-推荐通过AWS ECS控制台创建服务，包含以下配置：
+# 创建后端目标组  
+aws elbv2 create-target-group \
+    --name excelsync-backend-tg \
+    --protocol HTTP \
+    --port 8000 \
+    --vpc-id vpc-xxxxxxxx \
+    --health-check-path /api/health \
+    --health-check-interval-seconds 30
+
+# 创建Application Load Balancer
+aws elbv2 create-load-balancer \
+    --name excelsync-alb \
+    --subnets subnet-xxxxxxxx subnet-yyyyyyyy \
+    --security-groups sg-xxxxxxxx
+```
+
+#### 2. 配置ALB路由规则
+```bash
+# 创建监听器
+aws elbv2 create-listener \
+    --load-balancer-arn arn:aws:elasticloadbalancing:region:account:loadbalancer/app/excelsync-alb/xxxxxxxx \
+    --protocol HTTP \
+    --port 80 \
+    --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:region:account:targetgroup/excelsync-frontend-tg/xxxxxxxx
+
+# 添加API路径规则 (后端)
+aws elbv2 create-rule \
+    --listener-arn arn:aws:elasticloadbalancing:region:account:listener/app/excelsync-alb/xxxxxxxx/xxxxxxxx \
+    --priority 100 \
+    --conditions Field=path-pattern,Values="/api/*" \
+    --actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:region:account:targetgroup/excelsync-backend-tg/xxxxxxxx
+```
+
+### 第五步：创建ECS服务
 
 **前端服务配置：**
 - 服务名称: `excelsync-frontend-service`
 - 任务定义: `excelsync-frontend-task:1`
 - 平台版本: LATEST
 - 所需任务数: 2
-- 子网: Public subnets
-- 安全组: 允许端口3000
-- 负载均衡器: Application Load Balancer
-- 目标组: 端口3000
+- 子网: Private subnets (推荐)
+- 安全组: 只允许ALB访问端口3000
+- 负载均衡器: 关联到 excelsync-frontend-tg
 
 **后端服务配置：**
 - 服务名称: `excelsync-backend-service`
 - 任务定义: `excelsync-backend-task:1`  
 - 平台版本: LATEST
 - 所需任务数: 2
-- 子网: Private/Public subnets
-- 安全组: 允许端口8000
-- 负载均衡器: Application Load Balancer
-- 目标组: 端口8000
+- 子网: Private subnets (推荐)
+- 安全组: 只允许ALB访问端口8000
+- 负载均衡器: 关联到 excelsync-backend-tg
 
-### 第五步：测试部署
+### 第六步：测试部署
 
 1. **推送代码触发CI/CD**:
 ```bash
@@ -162,9 +220,10 @@ git push origin main
 - AWS ECS控制台查看服务状态
 - CloudWatch查看应用日志
 
-3. **访问应用**:
-- 前端: http://your-frontend-alb-dns/
-- 后端API: http://your-backend-alb-dns/api/health
+3. **访问应用** (通过单一ALB入口):
+- 前端: http://your-alb-dns/
+- 后端API: http://your-alb-dns/api/health
+- **路径路由**: ALB自动将 `/api/*` 请求转发到后端，其他请求转发到前端
 
 ## 🔍 故障排除
 
