@@ -6,6 +6,8 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: false,
   },
+  // Docker optimization
+  output: 'standalone',
   // 添加一些优化配置
   poweredByHeader: false,
   reactStrictMode: true,
