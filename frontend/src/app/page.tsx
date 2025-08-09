@@ -26,6 +26,11 @@ export default function HomePage() {
     setError(null)
   }
 
+  const handleFileRemoved = (fileId: string) => {
+    console.log('🗑️ [PAGE] 删除文件:', fileId)
+    setUploadedFiles(prev => prev.filter(f => f.id !== fileId))
+  }
+
   const handleParse = async () => {
     console.log('🚀 [PAGE] 开始解析流程')
     if (uploadedFiles.length === 0) {
@@ -274,6 +279,7 @@ export default function HomePage() {
 
             <FileUpload 
               onFilesAccepted={handleFilesAccepted}
+              onFileRemoved={handleFileRemoved}
               maxFiles={10}
             />
 

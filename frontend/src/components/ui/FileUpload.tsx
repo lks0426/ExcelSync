@@ -19,11 +19,12 @@ import { getErrorMessage } from '@/lib/errorMessages'
 
 interface FileUploadProps {
   onFilesAccepted: (files: UploadedFile[]) => void
+  onFileRemoved?: (fileId: string) => void
   maxFiles?: number
   className?: string
 }
 
-export function FileUpload({ onFilesAccepted, maxFiles = 5, className }: FileUploadProps) {
+export function FileUpload({ onFilesAccepted, onFileRemoved, maxFiles = 5, className }: FileUploadProps) {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const [isDragActive, setIsDragActive] = useState(false)
   const { language } = useLanguage()
@@ -64,6 +65,7 @@ export function FileUpload({ onFilesAccepted, maxFiles = 5, className }: FileUpl
 
   const removeFile = (id: string) => {
     setUploadedFiles(prev => prev.filter(f => f.id !== id))
+    onFileRemoved?.(id)
   }
 
   const getStatusIcon = (status: UploadedFile['status']) => {
