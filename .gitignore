@@ -1,0 +1,81 @@
+# Logs
+*.log
+logs/
+backend.log
+frontend.log
+backend_debug.log
+backend_restart.log
+frontend_restart.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.venv/
+env/
+venv/
+ENV/
+*.egg-info/
+.pytest_cache/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Next.js
+.next/
+out/
+.vercel
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific
+uploads/
+output/
+*.xlsx
+*.xls
+mapping_backup_*.xlsx
+mapping_output_*.xlsx
+*_output_*.xlsx
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+.temp/
+
+# Build artifacts
+build/
+dist/
+target/
+
+# TypeScript
+*.tsbuildinfo

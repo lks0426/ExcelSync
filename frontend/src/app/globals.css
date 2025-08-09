@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 355 7% 97%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --border: 240 5.9% 90%;
+    
+    --success: 142 76% 28%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 60% 40%;
+    --success-dark: 142 76% 20%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --primary: 142 70% 45%;
+    --primary-foreground: 144 61% 20%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --border: 240 3.7% 15.9%;
+    
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 98%;
+    --success-light: 142 71% 65%;
+    --success-dark: 142 71% 35%;
+  }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 355 7% 97%;
+    --secondary: 210 40% 98%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --accent: 210 40% 98%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 98%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --border: 214.3 31.8% 91.4%;
+    
+    --success: 142 76% 28%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 60% 40%;
+    --success-dark: 142 76% 20%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply backdrop-blur-glass bg-glass-light dark:bg-glass-dark border border-white/20 dark:border-white/10;
+  }
+  
+  .glass-card {
+    @apply glass rounded-2xl shadow-2xl;
+  }
+  
+  /* Text shadow for better contrast on success messages */
+  .text-success {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .text-success-light {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  }
+  
+  .gradient-bg {
+    background: linear-gradient(
+      135deg,
+      rgba(74, 144, 226, 0.1) 0%,
+      rgba(80, 200, 120, 0.1) 25%,
+      rgba(255, 107, 107, 0.1) 50%,
+      rgba(196, 113, 237, 0.1) 75%,
+      rgba(74, 144, 226, 0.1) 100%
+    );
+    background-size: 400% 400%;
+    animation: gradientShift 10s ease infinite;
+  }
+  
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+  
+  .animate-slide-in-left {
+    animation: slideInLeft 0.8s ease-out 0.2s both;
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight 0.8s ease-out 0.4s both;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.8s ease-out 0.6s both;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.6s ease-out 0.3s both;
+  }
+  
+  .animate-fade-in-delayed {
+    animation: fadeIn 0.6s ease-out 0.8s both;
+  }
+}
