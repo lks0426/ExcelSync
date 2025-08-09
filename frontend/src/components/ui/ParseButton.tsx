@@ -105,7 +105,6 @@ export function ParseButton({ onParse, disabled, fileCount, className }: ParseBu
         getButtonColors(),
         'hover:scale-105 active:scale-95',
         'shadow-lg hover:shadow-xl',
-        status === 'success' && 'animate-pulse',
         className
       )}
       style={{
@@ -123,10 +122,28 @@ export function ParseButton({ onParse, disabled, fileCount, className }: ParseBu
         {getButtonContent()}
       </div>
 
-      {/* Loading pulse effect */}
+      {/* Loading subtle glow effect */}
       {isLoading && (
-        <div className="absolute inset-0 rounded-xl bg-primary/20 animate-ping" />
+        <div 
+          className="absolute inset-0 rounded-xl bg-primary/10"
+          style={{
+            animation: 'gentle-pulse 2s ease-in-out infinite'
+          }}
+        />
       )}
+      
+      <style jsx>{`
+        @keyframes gentle-pulse {
+          0%, 100% { 
+            opacity: 0.1;
+            transform: scale(1);
+          }
+          50% { 
+            opacity: 0.3;
+            transform: scale(1.02);
+          }
+        }
+      `}</style>
     </button>
   )
 }
